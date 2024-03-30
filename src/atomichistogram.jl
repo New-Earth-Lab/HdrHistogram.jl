@@ -4,15 +4,15 @@ mutable struct AtomicHistogram{T<:Signed} <: AbstractHistogram{T}
     lowest_discernible_value::Int64
     highest_trackable_value::Int64
     unit_magnitude::UInt64
-    significant_figures::Int32
+    significant_figures::Int64
     sub_bucket_half_count_magnitude::UInt64
-    sub_bucket_half_count::Int32
+    sub_bucket_half_count::Int64
     sub_bucket_mask::Int64
-    sub_bucket_count::Int32
-    bucket_count::Int32
+    sub_bucket_count::Int64
+    bucket_count::Int64
     @atomic min_value::Int64
     @atomic max_value::Int64
-    normalizing_index_offset::Int32
+    normalizing_index_offset::Int64
     conversion_ratio::Float64
     @atomic total_count::Int64
     @atomic counts::Vector{T}
