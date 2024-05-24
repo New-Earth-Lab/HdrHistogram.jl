@@ -342,7 +342,7 @@ function value_at_percentile(h::AbstractHistogram, percentile::Float64)
     return _highest_equivalent_value(h, value_from_index)
 end
 
-function value_at_percentiles(h::AbstractHistogram, percentiles::Vector{Float64}, values::Vector{Int64})
+function value_at_percentiles(h::AbstractHistogram, percentiles, values::AbstractVector{<:Number})
     total_count = _total_count(h)
     for i in eachindex(percentiles)
         requested_percentile = clamp(percentiles[i], 0.0, 100.0)
