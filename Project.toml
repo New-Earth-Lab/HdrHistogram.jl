@@ -2,3 +2,6 @@ name = "HdrHistogram"
 uuid = "d0b8ac25-3072-4075-acf5-4a93ba78f71f"
 authors = ["Darryl Gamroth <dgamroth@rubus.ca>"]
 version = "0.1.0"
+
+[deps]
+Atomix = "a9b6321e-bd34-4604-b9c9-b65b8de01458"
