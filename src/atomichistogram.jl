@@ -9,8 +9,8 @@ mutable struct AtomicHistogram{C<:Signed} <: AbstractHistogram{C}
     const sub_bucket_half_count::Int64
     const sub_bucket_mask::Int64
     const sub_bucket_count::Int64
-    const bucket_count::Int64
     const leading_zero_count_base::Int64
+    const bucket_count::Int64
     @atomic min_value::Int64
     @atomic max_value::Int64
     const normalizing_index_offset::Int64
@@ -19,6 +19,45 @@ mutable struct AtomicHistogram{C<:Signed} <: AbstractHistogram{C}
     @atomic total_count::Int64
     @atomic counts::Vector{C}
 end
+
+lowest_discernible_value(h::AtomicHistogram) = h.lowest_discernible_value
+
+highest_trackable_value(h::AtomicHistogram) = h.highest_trackable_value
+
+unit_magnitude(h::AtomicHistogram) = h.unit_magnitude
+
+significant_figures(h::AtomicHistogram) = h.significant_figures
+
+sub_bucket_half_count_magnitude(h::AtomicHistogram) = h.sub_bucket_half_count_magnitude
+
+sub_bucket_half_count(h::AtomicHistogram) = h.sub_bucket_half_count
+
+sub_bucket_mask(h::AtomicHistogram) = h.sub_bucket_mask
+
+sub_bucket_count(h::AtomicHistogram) = h.sub_bucket_count
+
+leading_zero_count_base(h::AtomicHistogram) = h.leading_zero_count_base
+
+bucket_count(h::AtomicHistogram) = h.bucket_count
+
+min_value(h::AtomicHistogram) = @atomic h.min_value
+min_value!(h::AtomicHistogram, value) = @atomic h.min_value = value
+
+max_value(h::AtomicHistogram) = @atomic h.max_value
+max_value!(h::AtomicHistogram, value) = @atomic h.max_value = value
+
+normalizing_index_offset(h::AtomicHistogram) = h.normalizing_index_offset
+
+conversion_ratio(h::AtomicHistogram) = h.conversion_ratio
+
+auto_resize(h::AtomicHistogram) = false
+
+total_count(h::AtomicHistogram) = @atomic h.total_count
+total_count!(h::AtomicHistogram, value) = @atomic h.total_count = value
+total_count_inc!(h::AtomicHistogram, value) = @atomic h.total_count += value
+
+counts(h::AtomicHistogram) = h.counts
+counts_length(h::AtomicHistogram) = length(h.counts)
 
 """
     AtomicHistogram(C::Type{<:Signed}, lowest_discernible_value, highest_trackable_value, significant_figures)
@@ -51,26 +90,17 @@ function AtomicHistogram(lowest_discernible_value, highest_trackable_value, sign
     return _init(AtomicHistogram{Int64}, lowest_discernible_value, highest_trackable_value, significant_figures, false)
 end
 
-_total_count(h::AtomicHistogram) = @atomic h.total_count
-_total_count!(h::AtomicHistogram, value) = @atomic h.total_count = value
-_total_count_inc!(h::AtomicHistogram, value) = @atomic h.total_count += value
-_min_value(h::AtomicHistogram) = @atomic h.min_value
-_min_value!(h::AtomicHistogram, value) = @atomic h.min_value = value
-_max_value(h::AtomicHistogram) = @atomic h.max_value
-_max_value!(h::AtomicHistogram, value) = @atomic h.max_value = value
-_auto_resize(h::AtomicHistogram) = false
-
-@inline function _counts_get_direct(h::AtomicHistogram, index)
+@inline function counts_get_direct(h::AtomicHistogram, index)
     i = index + 1
     return @inbounds @atomic h.counts[i]
 end
 
-@inline function _counts_inc_direct!(h::AtomicHistogram, index, value)
+@inline function counts_inc_direct!(h::AtomicHistogram, index, value)
     i = index + 1
     return @inbounds @atomic h.counts[i] += value
 end
 
-@inline function _update_min_max!(h::AtomicHistogram, value)
+@inline function update_min_max!(h::AtomicHistogram, value)
     @atomic min(h.min_value, value)
     @atomic max(h.max_value, value)
 end

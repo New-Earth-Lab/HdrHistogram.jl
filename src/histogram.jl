@@ -18,6 +18,48 @@ mutable struct Histogram{C<:Signed} <: AbstractHistogram{C}
     counts::Vector{C}
 end
 
+lowest_discernible_value(h::Histogram) = h.lowest_discernible_value
+
+highest_trackable_value(h::Histogram) = h.highest_trackable_value
+highest_trackable_value!(h::Histogram, value) = h.highest_trackable_value = value
+
+unit_magnitude(h::Histogram) = h.unit_magnitude
+
+significant_figures(h::Histogram) = h.significant_figures
+
+sub_bucket_half_count_magnitude(h::Histogram) = h.sub_bucket_half_count_magnitude
+
+sub_bucket_half_count(h::Histogram) = h.sub_bucket_half_count
+
+sub_bucket_mask(h::Histogram) = h.sub_bucket_mask
+
+sub_bucket_count(h::Histogram) = h.sub_bucket_count
+
+leading_zero_count_base(h::Histogram) = h.leading_zero_count_base
+
+bucket_count(h::Histogram) = h.bucket_count
+bucket_count!(h::Histogram, value) = h.bucket_count = value
+
+min_value(h::Histogram) = h.min_value
+min_value!(h::Histogram, value) = h.min_value = value
+
+max_value(h::Histogram) = h.max_value
+max_value!(h::Histogram, value) = h.max_value = value
+
+normalizing_index_offset(h::Histogram) = h.normalizing_index_offset
+
+conversion_ratio(h::Histogram) = h.conversion_ratio
+
+auto_resize(h::Histogram) = h.auto_resize
+
+total_count(h::Histogram) = h.total_count
+total_count!(h::Histogram, value) = h.total_count = value
+total_count_inc!(h::Histogram, value) = h.total_count += value
+
+counts(h::Histogram) = h.counts
+counts!(h::Histogram, value) = h.counts = value
+counts_length(h::Histogram) = length(h.counts)
+
 """
     Histogram(C::Type{<:Signed}, lowest_discernible_value, highest_trackable_value, significant_figures)
 
