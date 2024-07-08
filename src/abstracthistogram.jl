@@ -254,9 +254,8 @@ end
 @inline function record_corrected_value!(h::AbstractHistogram, value::Int64, expected_interval::Int64, count::Int64=1)
     record_value!(h, value, count)
 
-    if value <= expected_interval || expected_interval <= 0
-        return
-    end
+    value > expected_interval || return
+    expected_interval > 0 || return
 
     missing_value = value - expected_interval
     while missing_value >= expected_interval
@@ -267,13 +266,13 @@ end
 
 function add(h::AbstractHistogram, from::AbstractHistogram)
     for i in RecordedValuesIterator(from)
-        record_value!(h, value(i), count(i))
+        record_value!(h, value_iterated_to(i), count_at_value_iterated_to(i))
     end
 end
 
 function add_while_correcting_for_coordinated_omission(h::AbstractHistogram, from::AbstractHistogram, expected_interval::Int64)
     for i in RecordedValuesIterator(from)
-        record_corrected_value!(h, value(i), expected_interval, count(i))
+        record_corrected_value!(h, value_iterated_to(i), expected_interval, count_at_value_iterated_to(i))
     end
 end
 
@@ -314,7 +313,7 @@ function value_at_percentile(h::AbstractHistogram, percentile::Real)
     for i in RecordedValuesIterator(h)
         if total_count_to_this_value(i) >= count
             return percentile == zero(typeof(percentile)) ?
-                   lowest_equivalent_value(h, value(i)) : highest_equivalent_value(h, value(i))
+                   lowest_equivalent_value(h, value_iterated_to(i)) : highest_equivalent_value(h, value_iterated_to(i))
         end
     end
     return 0
@@ -339,7 +338,7 @@ function value_at_percentile(h::AbstractHistogram, percentiles, values::Abstract
 
         while at_pos <= length(percentiles) && total_count_to_this_value(i) >= values[at_pos]
             values[at_pos] = percentiles[at_pos] == zero(eltype(percentiles)) ?
-                             lowest_equivalent_value(h, value(i)) : highest_equivalent_value(h, value(i))
+                             lowest_equivalent_value(h, value_iterated_to(i)) : highest_equivalent_value(h, value_iterated_to(i))
             at_pos += 1
         end
     end
@@ -352,13 +351,13 @@ function value_at_percentile(h::AbstractHistogram{C}, percentiles::AbstractVecto
 end
 
 function mean(h::AbstractHistogram{C}) where {C}
-    total = 0
+    total = Int128(0)
     count_total = total_count(h)
     if count_total == zero(C)
         return 0.0
     end
     for i in RecordedValuesIterator(h)
-        total += count(i) * median_equivalent_value(h, value(i))
+        total += count_at_value_iterated_to(i) * median_equivalent_value(h, value_iterated_to(i))
     end
     return total / count_total
 end
@@ -371,8 +370,8 @@ function stddev(h::AbstractHistogram{C}) where {C}
     m = mean(h)
     geometric_dev_total = 0.0
     for i in RecordedValuesIterator(h)
-        dev = median_equivalent_value(h, value(i)) - m
-        geometric_dev_total += dev^2 * count(i)
+        dev = median_equivalent_value(h, value_iterated_to(i)) - m
+        geometric_dev_total += dev^2 * count_at_value_iterated_to(i)
     end
     return sqrt(geometric_dev_total / count_total)
 end
@@ -394,7 +393,7 @@ end
 function percentile_print(io::IO, h::AbstractHistogram, ticks_per_half_distance, value_scale)
     @printf(io, "%12s %12s %12s %12s\n\n", "Value", "Percentile", "TotalCount", "1/(1-Percentile)")
     for i in PercentileIterator(h, ticks_per_half_distance)
-        val = highest_equivalent_value(h, value(i)) / value_scale
+        val = highest_equivalent_value(h, value_iterated_to(i)) / value_scale
         p = percentile(i) / 100.0
         total_count = total_count_to_this_value(i)
         inverted_percentile = 1.0 / (1.0 - p)
