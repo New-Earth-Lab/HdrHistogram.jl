@@ -1,7 +1,13 @@
 name = "HdrHistogram"
 uuid = "d0b8ac25-3072-4075-acf5-4a93ba78f71f"
 authors = ["Darryl Gamroth <dgamroth@rubus.ca>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
+Accessors = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
 Atomix = "a9b6321e-bd34-4604-b9c9-b65b8de01458"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+
+[compat]
+Accessors = "0.1.36"
+Printf = "1.11.0"
