@@ -1,5 +1,6 @@
 module HdrHistogram
 
+using Accessors
 using Printf
 
 include("abstracthistogram.jl")
