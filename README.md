@@ -57,6 +57,5 @@ HdrHistogram.percentiles_print(
     stdout,         # IO to write to
     histogram,      # Histogram to print
     5,              # Granularity of printed values
-    1.0,            # Multiplier for results
-    CLASSIC)        # Format CLASSIC/CSV supported.
+    1.0)            # Multiplier for results
 ```
