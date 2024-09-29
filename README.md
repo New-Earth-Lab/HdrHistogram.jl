@@ -10,11 +10,11 @@ implementation.  The current supported features are:
 * Atomic histograms
 * All iterator types (all values, recorded, percentiles, linear, logarithmic)
 * Auto-resizing of histograms
+* Reader/writer phaser and interval recorder
 
 Features not supported, but planned:
 
 * Histogram serialisation (encoding version 1.2, decoding 1.0-1.2)
-* Reader/writer phaser and interval recorder
 
 Features unlikely to be implemented:
 
@@ -28,7 +28,7 @@ Features unlikely to be implemented:
 ```Julia
 using HdrHistogram
 
-# Initialise the histogram
+# Initialize the histogram
 histogram = HdrHistogram.Histogram(
     1,          # Minimum value
     3600000000, # Maximum value
@@ -38,18 +38,18 @@ histogram = HdrHistogram.Histogram(
 # Record value
 HdrHistogram.record_value!(
     histogram,      # Histogram to record to
-    value)          # Value to record
+    12345)          # Value to record
 
 # Record value n times
 HdrHistogram.record_value!(
     histogram,      # Histogram to record to
-    value,          # Value to record
+    12345,          # Value to record
     10)             # Record value 10 times
 
 # Record value with correction for co-ordinated omission.
 HdrHistogram.record_corrected_value!(
     histogram,      # Histogram to record to
-    value,          # Value to record
+    12345,          # Value to record
     1000)           # Record with expected interval of 1000.
 
 # Print out the values of the histogram
@@ -58,4 +58,38 @@ HdrHistogram.percentiles_print(
     histogram,      # Histogram to print
     5,              # Granularity of printed values
     1.0)            # Multiplier for results
+
+# Initialize interval recorder. Multiple tasks can write to a recorder at the same time
+recorder = HdrHistogram.IntervalRecorder(
+    HdrHistogram.Histogram(
+        1,          # Minimum value
+        3600000000, # Maximum value
+        3           # Number of significant figures
+    ))
+
+# Record value
+HdrHistogram.record_value!(
+    recorder,       # Recorder to record to
+    12345)          # Value to record
+
+# Record value n times
+HdrHistogram.record_value!(
+    recorder,       # Recorder to record to
+    12345,          # Value to record
+    10)             # Record value 10 times
+
+# Record value with correction for co-ordinated omission.
+HdrHistogram.record_corrected_value!(
+    recorder,       # Recorder to record to
+    12345,          # Value to record
+    1000)           # Record with expected interval of 1000.
+
+# Read an interval histogram from the recorder and allocate a new one for recording
+interval = HdrHistogram.interval_histogram(
+    recorder)       # Recorder to read from
+
+# Read an interval histogram from the recorder and recycle an old histogram for recording 
+new_interval = HdrHistogram.interval_histogram(
+    recorder,       # Recorder to read from 
+    interval)       # Histogram to recycle    
 ```
