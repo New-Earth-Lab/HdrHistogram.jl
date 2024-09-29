@@ -1,4 +1,4 @@
-abstract type AbstractHistogram{C} end
+abstract type AbstractHistogram{C<:Signed} end
 
 #### MEMORY ####
 
@@ -51,6 +51,21 @@ function _init(H::Type{<:AbstractHistogram{C}},
         bucket_count, typemax(C), 0, 0, 1.0, auto_resize, 0, zeros(C, counts_len))
 end
 
+"""
+    Base.copy(h::T) where {T<:AbstractHistogram}
+
+Create a copy of the given histogram.
+
+# Arguments
+- `h::T`: An instance of a type that is a subtype of `AbstractHistogram`.
+
+# Returns
+- A new instance of the same type as `h` with the same configuration.
+"""
+function Base.copy(h::T) where {T<:AbstractHistogram}
+    return _init(T, lowest_discernible_value(h), highest_trackable_value(h), significant_figures(h), auto_resize(h))
+end
+
 function reset!(h::AbstractHistogram{C}) where {C}
     total_count!(h, 0)
     min_value!(h, typemax(C))
@@ -67,7 +82,7 @@ function resize!(h::AbstractHistogram{C}, highest_trackable_value) where {C}
     bucket_count = buckets_needed_to_cover_value(C, highest_trackable_value, sub_bucket_count(h), unit_magnitude(h))
     counts_len = (bucket_count + 1) * sub_bucket_half_count(h)
     old_len = counts_length(h)
-    resize!(counts(h), counts_len)
+    Base.resize!(counts(h), counts_len)
     fill!(view(counts(h), old_len+1:counts_len), 0)
     bucket_count!(h, bucket_count)
     highest_trackable_value!(h, highest_trackable_value)

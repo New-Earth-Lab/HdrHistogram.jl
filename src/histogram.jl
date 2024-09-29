@@ -1,4 +1,4 @@
-mutable struct Histogram{C<:Signed} <: AbstractHistogram{C}
+mutable struct Histogram{C} <: AbstractHistogram{C}
     const lowest_discernible_value::Int64
     highest_trackable_value::Int64
     const unit_magnitude::UInt64

@@ -1,6 +1,6 @@
 using Atomix: @atomic
 
-mutable struct AtomicHistogram{C<:Signed} <: AbstractHistogram{C}
+mutable struct AtomicHistogram{C} <: AbstractHistogram{C}
     const lowest_discernible_value::Int64
     const highest_trackable_value::Int64
     const unit_magnitude::UInt64

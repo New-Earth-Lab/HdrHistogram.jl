@@ -1,7 +1,5 @@
 using Test
 
-using BenchmarkTools
-
 include("../src/HdrHistogram.jl")
 
 using .HdrHistogram
