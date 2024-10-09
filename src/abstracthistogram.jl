@@ -52,9 +52,9 @@ function _init(H::Type{<:AbstractHistogram{C}},
 end
 
 """
-    Base.copy(h::T) where {T<:AbstractHistogram}
+    Base.similar(h::T) where {T<:AbstractHistogram}
 
-Create a copy of the given histogram.
+Construct a new empty `T` instance with the same configuration as `h`.
 
 # Arguments
 - `h::T`: An instance of a type that is a subtype of `AbstractHistogram`.
@@ -62,7 +62,7 @@ Create a copy of the given histogram.
 # Returns
 - A new instance of the same type as `h` with the same configuration.
 """
-function Base.copy(h::T) where {T<:AbstractHistogram}
+function Base.similar(h::T) where {T<:AbstractHistogram}
     return _init(T, lowest_discernible_value(h), highest_trackable_value(h), significant_figures(h), auto_resize(h))
 end
 

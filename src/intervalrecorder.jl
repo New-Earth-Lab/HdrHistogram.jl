@@ -29,7 +29,7 @@ end
 
 function interval_histogram(r::IntervalRecorder)
     reader_lock(r.phaser)
-    inactive = @atomicswap r.active = copy(r.active)
+    inactive = @atomicswap r.active = similar(r.active)
     flip_phase(r.phaser)
     reader_unlock(r.phaser)
 
