@@ -9,9 +9,9 @@ Atomix = "a9b6321e-bd34-4604-b9c9-b65b8de01458"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [compat]
-Accessors = "0.1.36"
-Printf = "1.11.0"
-Test = "1.11.0"
+Accessors = "0.1"
+Printf = "1"
+Test = "1"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
